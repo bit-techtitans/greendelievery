@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Go Green</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+body{
+font-family:Arial;
+background:linear-gradient(#e8f5e9,#c8e6c9);
+margin:0;
+}
+
+header{
+background:#1b5e20;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+header h1{
+margin:0;
+font-size:32px;
+}
+
+.container{
+padding:20px;
+text-align:center;
+}
+
+.card{
+background:white;
+border-radius:12px;
+padding:15px;
+margin:15px;
+width:220px;
+display:inline-block;
+box-shadow:0px 4px 10px rgba(0,0,0,0.2);
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.05);
+}
+
+.card img{
+width:100%;
+height:140px;
+object-fit:cover;
+border-radius:8px;
+}
+
+button{
+padding:8px 12px;
+margin:5px;
+background:#2e7d32;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1b5e20;
+}
+
+input{
+padding:10px;
+margin:5px;
+width:220px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+#map{
+height:300px;
+margin-top:10px;
+border-radius:10px;
+}
+
+.hidden{
+display:none;
+}
+
+.walletBox{
+background:white;
+padding:20px;
+border-radius:10px;
+display:inline-block;
+box-shadow:0px 3px 8px rgba(0,0,0,0.2);
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Go Green 🌿</h1>
+<p>Eco Friendly Electronics Marketplace</p>
+</header>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="container">
+<h2>Login</h2>
+<p>Username</p>
+<input id="username">
+<p>Password</p>
+<input type="password" id="password">
+<br>
+<button onclick="loginUser()">Login</button>
+</div>
+
+
+<!-- SHOP PAGE -->
+<div id="shopPage" class="container hidden">
+
+<button onclick="openWallet()">Wallet</button>
+<button onclick="showCart()">Cart</button>
+
+<h2>Products</h2>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1562976540-1502c2145186">
+<h3>RAM</h3>
+<p>Price: ₹2500</p>
+<button onclick="showDetails(0)">Details</button>
+<button onclick="addToCart(0)">Add To Cart</button>
+<button onclick="buyNow(0)">Buy Now</button>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1581092335397-9583eb92d232">
+<h3>Arduino Board</h3>
+<p>Price: ₹1200</p>
+<button onclick="showDetails(1)">Details</button>
+<button onclick="addToCart(1)">Add To Cart</button>
+<button onclick="buyNow(1)">Buy Now</button>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3">
+<h3>Bluetooth Mouse</h3>
+<p>Price: ₹800</p>
+<button onclick="showDetails(2)">Details</button>
+<button onclick="addToCart(2)">Add To Cart</button>
+<button onclick="buyNow(2)">Buy Now</button>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7">
+<h3>Thermal Paste</h3>
+<p>Price: ₹300</p>
+<button onclick="showDetails(3)">Details</button>
+<button onclick="addToCart(3)">Add To Cart</button>
+<button onclick="buyNow(3)">Buy Now</button>
+</div>
+
+</div>
+
+
+<!-- DETAILS PAGE -->
+<div id="detailsPage" class="container hidden"></div>
+
+
+<!-- CHECKOUT PAGE -->
+<div id="checkoutPage" class="container hidden">
+
+<h2>Delivery Details</h2>
+
+<p>Enter Address</p>
+<input id="address">
+
+<h3>Green Delivery Option</h3>
+
+<label>
+    <input type="checkbox" id="Eoption">Same E-Vehicle   
+<input type="checkbox" id="clubOption"> Club With Neighbours
+</label>
+
+<p>Neighbour Details</p>
+<input id="neighbour">
+
+<h3>Delivery Route</h3>
+<div id="map"></div>
+
+<br>
+<button onclick="placeOrder()">Place Order</button>
+
+</div>
+
+
+<!-- WALLET PAGE -->
+<div id="walletPage" class="container hidden">
+
+<div class="walletBox">
+<h2>Green Wallet</h2>
+<p>Your Points: <span id="points">0</span></p>
+<p>100 Points = No Delivery Charge 🚚</p>
+<button onclick="goShop()">Back To Shop</button>
+</div>
+
+</div>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+var walletPoints = 0
+var cart = []
+
+var productNames = ["RAM","Arduino Board","Bluetooth Mouse","Thermal Paste"]
+
+var productPrices = [2500,1200,800,300]
+
+var productDetails = [
+"High speed RAM used in computers for better performance.",
+"Arduino Uno board used for electronics and robotics projects.",
+"Wireless bluetooth mouse for laptops and desktops.",
+"Thermal paste used for cooling CPU and improving heat transfer."
+]
+
+function loginUser(){
+
+var u = document.getElementById("username").value
+var p = document.getElementById("password").value
+
+if(u!="" && p!=""){
+
+document.getElementById("loginPage").classList.add("hidden")
+
+document.getElementById("shopPage").classList.remove("hidden")
+
+}
+
+else{
+alert("Enter username and password")
+}
+
+}
+
+
+function showDetails(index){
+
+var page = document.getElementById("detailsPage")
+
+var text = ""
+
+text += "<h2>" + productNames[index] + "</h2>"
+text += "<p>" + productDetails[index] + "</p>"
+text += "<p>Price: ₹" + productPrices[index] + "</p>"
+
+text += "<button onclick='buyNow("+index+")'>Buy Now</button>"
+text += "<button onclick='goShop()'>Back</button>"
+
+page.innerHTML = text
+
+hideAll()
+
+page.classList.remove("hidden")
+
+}
+
+
+function addToCart(index){
+
+cart.push(productNames[index])
+
+alert("Added to cart")
+
+}
+
+
+function showCart(){
+
+if(cart.length==0){
+alert("Cart is empty")
+}
+
+else{
+alert(cart.join("\n"))
+}
+
+}
+
+
+function buyNow(index){
+
+hideAll()
+
+document.getElementById("checkoutPage").classList.remove("hidden")
+
+showMap()
+
+}
+
+
+function placeOrder(){
+
+walletPoints = walletPoints + 20
+
+alert("Order placed successfully. 20 Green Points added 🌱")
+
+document.getElementById("points").innerText = walletPoints
+
+
+goShop()
+
+}
+
+
+function openWallet(){
+
+hideAll()
+
+document.getElementById("walletPage").classList.remove("hidden")
+
+document.getElementById("points").innerText = walletPoints
+
+}
+
+
+function goShop(){
+
+hideAll()
+
+document.getElementById("shopPage").classList.remove("hidden")
+
+}
+
+
+function hideAll(){
+
+document.getElementById("shopPage").classList.add("hidden")
+
+document.getElementById("detailsPage").classList.add("hidden")
+
+document.getElementById("checkoutPage").classList.add("hidden")
+
+document.getElementById("walletPage").classList.add("hidden")
+
+}
+
+
+function showMap(){
+
+setTimeout(function(){
+
+var map = L.map('map').setView([13.0827,80.2707],13)
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19
+}).addTo(map)
+
+L.marker([13.0827,80.2707]).addTo(map)
+.bindPopup("Delivery Route Example")
+.openPopup()
+
+},200)
+
+}
+
+</script>
+
+</body>
+</html>
