@@ -176,8 +176,11 @@ box-shadow:0px 3px 8px rgba(0,0,0,0.2);
 
 <label>
     <input type="checkbox" id="Eoption">E-Vehicle   
-<input type="checkbox" id="clubOption"> Club With Neighbours
+<button onclick="popup()">Club With Neighbours</button>
 </label>
+    <p id="pop"></p>
+    
+    
 
 <p>Scheduled Date</p>
 <input id="neighbour" type="date">
@@ -284,7 +287,9 @@ alert(cart.join("\n"))
 }
 
 }
-
+function popup(){
+    document.getElementById("popup").textContent=`Arjun and few others from your locality has ordered and your order is clubbed with their's`;
+}
 
 function buyNow(index){
 
