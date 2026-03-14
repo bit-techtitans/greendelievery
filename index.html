@@ -90,8 +90,30 @@ border-radius:10px;
 display:inline-block;
 box-shadow:0px 3px 8px rgba(0,0,0,0.2);
 }
-    #Eoption{
+    /* #Eoption{
 margin-left:8px;
+} */
+
+    .checkboxRow{
+display:flex;
+align-items:center;
+gap:5px;
+justify-content:center;
+}
+
+#Eoption{
+margin:0;
+width:auto;
+}
+
+.clubBtn{
+margin-top:15px;
+}
+
+#pop{
+margin-top:10px;
+font-weight:bold;
+color:#1b5e20;
 }
 
 </style>
@@ -177,13 +199,23 @@ margin-left:8px;
 
 <h3>Green Delivery Option</h3>
 
-<label>
+<!-- <label>
     <input type="checkbox" id="Eoption" >E-Vehicle
 <button onclick="popup()">Club With Neighbours</button>
 </label>
     <br>
     <br>
-    <p id="pop"></p>
+    <p id="pop"></p> -->
+
+    <div class="deliveryOption">
+<label class="checkboxRow">
+<input type="checkbox" id="Eoption"> E-Vehicle
+</label>
+
+<button class="clubBtn" onclick="popup()">Club With Neighbours</button>
+
+<p id="pop"></p>
+</div>
     
     
 
